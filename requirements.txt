@@ -1,0 +1,7 @@
+Django==5.1.4
+gunicorn
+whitenoise
+dj-database-url
+psycopg[binary,pool]
+Pillow
+xhtml2pdf

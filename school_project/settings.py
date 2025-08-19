@@ -15,7 +15,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 
 # ⚠️ DEBUG set to True temporarily to see full error messages on Railway
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ["*", ".railway.app"]
 CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
@@ -35,7 +35,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",   # <— added for serving static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",   # <— serving static files
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -107,11 +107,17 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# WhiteNoise storage
+# WhiteNoise + default file storage
 STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
-    }
+    "default": {  # for uploads (student photos, etc.)
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+        "OPTIONS": {
+            "location": MEDIA_ROOT,
+        },
+    },
+    "staticfiles": {  # for static files
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
 }
 
 # ===========================

@@ -14,7 +14,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ===========================
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 
-DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
+# ⚠️ DEBUG set to True temporarily to see full error messages on Railway
+DEBUG = True
 
 ALLOWED_HOSTS = ["*", ".railway.app"]
 CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]

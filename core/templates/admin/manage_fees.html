@@ -1,0 +1,58 @@
+{% extends 'admin/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Manage Fees</h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+    </div>
+
+    <a href="{% url 'add_fee' %}" class="btn btn-primary mb-3">Add New Fee</a>
+
+    {% if fees %}
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Amount (₦)</th>
+                <th>Description</th>
+                <th>Term</th>
+                <th>Session</th>
+                <th>Status</th>
+                <th>Due Date</th>
+                <th>Payment Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fee in fees %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ fee.student }}</td>
+                <td>{{ fee.amount }}</td>
+                <td>{{ fee.description }}</td>
+                <td>{{ fee.get_term_display }}</td>
+                <td>{{ fee.session }}</td>
+                <td>{{ fee.get_status_display }}</td>
+                <td>{{ fee.due_date }}</td>
+                <td>{{ fee.payment_date|default:"N/A" }}</td>
+                <td>
+                    <a href="{% url 'edit_fee' fee.id %}" class="btn btn-sm btn-warning">Edit</a>
+                    <a href="{% url 'delete_fee' fee.id %}" class="btn btn-sm btn-danger">Delete</a>
+
+                    {% if fee.id and fee.id|add:0 %}
+                        <a href="{% url 'generate_invoice' fee.id %}" class="btn btn-sm btn-info">Invoice</a>
+                    {% else %}
+                        <span class="text-muted">No Invoice</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p class="text-muted">No fee records found.</p>
+    {% endif %}
+</div>
+{% endblock %}

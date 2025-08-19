@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back Link -->
+    <div class="mb-3">
+        <a href="{% url 'add_cbt_question' test.id %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Questions
+        </a>
+    </div>
+
+    <!-- Edit Form Card -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Edit Question for: {{ test.title }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Update Question
+                    </button>
+                    <a href="{% url 'add_cbt_question' test.id %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

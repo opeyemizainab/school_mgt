@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}CBT Result{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-body">
+            <h3 class="card-title text-primary">{{ submission.test.title }} - CBT Result</h3>
+
+            <div class="alert alert-info mt-3">
+                <p><strong>Score:</strong> {{ score }} / {{ total }}</p>
+                <p><strong>Percentage:</strong> {{ percentage }}%</p>
+            </div>
+
+            <h4 class="mt-4">Your Answers</h4>
+            <ol class="list-group list-group-numbered">
+                {% for answer in answers %}
+                    <li class="list-group-item">
+                        <strong>{{ answer.question.question_text }}</strong>
+                        <br>
+                        <span class="text-muted">Your answer:</span> {{ answer.selected_option }}
+                        <br>
+                        <span class="text-muted">Correct answer:</span> {{ answer.question.correct_option }}
+                        <br>
+                        {% if answer.selected_option == answer.question.correct_option %}
+                            <span class="text-success fw-bold">✔ Correct</span>
+                        {% else %}
+                            <span class="text-danger fw-bold">✘ Incorrect</span>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ol>
+
+            <div class="mt-4">
+                <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">
+                    ← Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

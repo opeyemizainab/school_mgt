@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Add Teacher User{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-success">Create Teacher User</h2>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ user_form.as_p }}
+        <button type="submit" class="btn btn-success">Continue to Profile</button>
+        <a href="{% url 'manage_teachers' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<div class="mb-3">
+    {% if request.user.user_type == "teacher" %}
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+    {% elif request.user.user_type == "admin" %}
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+    {% elif request.user.user_type == "student" %}
+        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+    {% elif request.user.user_type == "librarian" %}
+        <a href="{% url 'librarian_dashboard' %}" class="btn btn-secondary">← Back to Dashboard</a>
+    {% endif %}
+</div>
+
+
+{% include "includes/back_to_dashboard.html" %}

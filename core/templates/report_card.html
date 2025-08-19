@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Report Card</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 40px;
+            color: #333;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .header h2 {
+            color: #007bff;
+            margin: 0;
+        }
+
+        .info {
+            margin-bottom: 20px;
+        }
+
+        .info p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-style: italic;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Student Report Card</h2>
+        </div>
+
+        <div class="info">
+            <p><strong>Name:</strong> {{ student.user.get_full_name }}</p>
+            <p><strong>Class:</strong> {{ student.classroom.name }}</p>
+            <p><strong>Term:</strong> {{ term }} | <strong>Session:</strong> {{ session }}</p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Test Score</th>
+                    <th>Exam Score</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.subject.name }}</td>
+                    <td>{{ result.test_score }}</td>
+                    <td>{{ result.exam_score }}</td>
+                    <td>{{ result.total_score }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">No results available.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>&copy; {{ now|date:"Y" }} School Management System</p>
+        </div>
+    </div>
+</body>
+</html>

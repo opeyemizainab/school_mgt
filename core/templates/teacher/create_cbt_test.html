@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back & Manage Links -->
+    <div class="mb-3">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary me-2">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+        <a href="{% url 'manage_cbt_tests' %}" class="btn btn-outline-primary">
+            <i class="bi bi-list-task"></i> Manage CBT Tests
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create CBT Test</h4>
+        </div>
+        <div class="card-body">
+
+            <!-- Messages -->
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <!-- Form -->
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-md-6">
+                    <label for="title" class="form-label">Test Title</label>
+                    <input type="text" name="title" id="title" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="subject" class="form-label">Subject</label>
+                    <select name="subject" id="subject" class="form-select" required>
+                        {% for subject in subjects %}
+                            <option value="{{ subject.id }}">{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="classroom" class="form-label">Class</label>
+                    <select name="classroom" id="classroom" class="form-select" required>
+                        {% for class in classes %}
+                            <option value="{{ class.id }}">{{ class.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="term" class="form-label">Term</label>
+                    <input type="text" name="term" id="term" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="session" class="form-label">Session</label>
+                    <input type="text" name="session" id="session" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="duration_minutes" class="form-label">Duration (minutes)</label>
+                    <input type="number" name="duration_minutes" id="duration_minutes" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="total_questions" class="form-label">Total Questions</label>
+                    <input type="number" name="total_questions" id="total_questions" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="start_time" class="form-label">Start Time</label>
+                    <input type="datetime-local" name="start_time" id="start_time" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="end_time" class="form-label">End Time</label>
+                    <input type="datetime-local" name="end_time" id="end_time" class="form-control" required>
+                </div>
+
+                <div class="col-12 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Create Test
+                    </button>
+                </div>
+            </form>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Results</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        select, button {
+            padding: 8px 12px;
+            font-size: 14px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button {
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f1f1f1;
+        }
+
+        .pdf-btn {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .pdf-btn button {
+            background-color: #28a745;
+        }
+
+        .pdf-btn button:hover {
+            background-color: #218838;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 15px;
+            text-decoration: none;
+            background-color: #6c757d;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 5px;
+        }
+
+        .back-link:hover {
+            background-color: #5a6268;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+
+        <!-- Back to Dashboard -->
+        <a href="{% url 'student_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+        <h2>My Results</h2>
+
+        <!-- Filter Form -->
+        <form method="get">
+            <label for="session">Session:</label>
+            <select name="session" id="session">
+                <option value="">All</option>
+                {% for s in all_sessions %}
+                    <option value="{{ s.id }}" {% if selected_session == s.id %}selected{% endif %}>
+                        {{ s.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <label for="term">Term:</label>
+            <select name="term" id="term">
+                <option value="">All</option>
+                {% for t in all_terms %}
+                    <option value="{{ t.id }}" {% if selected_term == t.id %}selected{% endif %}>
+                        {{ t.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Filter</button>
+        </form>
+
+        <!-- Results Table -->
+        {% if results %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Test Score</th>
+                    <th>Exam Score</th>
+                    <th>Total</th>
+                    <th>Grade</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>{{ result.subject.name }}</td>
+                    <td>{{ result.test_score }}</td>
+                    <td>{{ result.exam_score }}</td>
+                    <td>{{ result.total_score }}</td>
+                    <td>{{ result.grade }}</td>
+                    <td>{{ result.comment }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <p>No results found.</p>
+        {% endif %}
+
+        <!-- PDF Download -->
+        <div class="pdf-btn">
+            <form method="get" action="{% url 'download_report_card' %}" target="_blank">
+                <input type="hidden" name="term" value="{{ selected_term }}">
+                <input type="hidden" name="session" value="{{ selected_session }}">
+                <button type="submit">Download Report Card (PDF)</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

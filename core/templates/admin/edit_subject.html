@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block title %}Edit Subject{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">Edit Subject</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="mb-4">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Subject Name</label>
+            <input type="text" name="name" value="{{ subject.name }}" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Update Subject</button>
+        <a href="{% url 'manage_subjects' %}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+</div>
+{% endblock %}

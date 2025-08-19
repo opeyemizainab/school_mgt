@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back to Dashboard Button -->
+    <div class="mb-3">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-info text-white">
+            <h4 class="mb-0">View Student Results</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-6">
+                    {{ form.classroom.label_tag }}
+                    {{ form.classroom }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.subject.label_tag }}
+                    {{ form.subject }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.term.label_tag }}
+                    {{ form.term }}
+                </div>
+                <div class="col-md-6">
+                    {{ form.session.label_tag }}
+                    {{ form.session }}
+                </div>
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> View Results
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if results_data %}
+        <div class="card mt-4 shadow">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Results</h5>
+            </div>
+            <div class="card-body table-responsive">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Test Score</th>
+                            <th>Exam Score</th>
+                            <th>Total</th>
+                            <th>Grade</th>
+                            <th>Comment</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for r in results_data %}
+                        <tr>
+                            <td>{{ r.student.user.get_full_name }}</td>
+                            <td>{{ r.test_score }}</td>
+                            <td>{{ r.exam_score }}</td>
+                            <td>{{ r.test_score|add:r.exam_score }}</td>
+                            <td>{{ r.grade }}</td>
+                            <td>{{ r.comment }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted">No results found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

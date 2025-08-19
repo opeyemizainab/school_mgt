@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h3>Edit Result for {{ result.student.user.get_full_name }} - {{ result.subject.name }}</h3>
+
+    <form method="post" class="mt-3">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Save Changes</button>
+        <a href="{% url 'admin_student_results_detail' result.student.id result.term.id result.session.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

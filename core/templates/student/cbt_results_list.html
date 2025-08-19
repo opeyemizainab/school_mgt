@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}My CBT Results{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3 class="text-primary">📊 Past CBT Results</h3>
+        <a href="{% url 'student_dashboard' %}" class="btn btn-secondary">
+            ← Back to Dashboard
+        </a>
+    </div>
+
+    {% if submissions %}
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover table-bordered mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Test</th>
+                            <th>Subject</th>
+                            <th>Submitted At</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sub in submissions %}
+                        <tr>
+                            <td>{{ sub.test.title }}</td>
+                            <td>{{ sub.test.subject.name }}</td>
+                            <td>{{ sub.submitted_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <a href="{% url 'view_cbt_result' sub.id %}" class="btn btn-sm btn-primary">
+                                    🔍 View Result
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info mt-3">
+            No CBT submissions found.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

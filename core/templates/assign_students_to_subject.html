@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% if messages %}
+<script>
+    {% for message in messages %}
+    alert("{{ message|escapejs }}");
+    {% endfor %}
+</script>
+{% endif %}
+
+<div class="container mt-4">
+    <h3>Assign Students to Subject</h3>
+
+    <form method="get" class="row g-3">
+        <div class="col-md-5">
+            <label>Subject</label>
+            <select name="subject" class="form-select">
+                <option value="">Select Subject</option>
+                {% for subject in subjects %}
+                <option value="{{ subject.id }}" {% if selected_subject and selected_subject.id == subject.id %}selected{% endif %}>{{ subject.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-5">
+            <label>Classroom</label>
+            <select name="classroom" class="form-select">
+                <option value="">Select Class</option>
+                {% for cls in classes %}
+                <option value="{{ cls.id }}" {% if selected_class and selected_class.id == cls.id %}selected{% endif %}>{{ cls.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 align-self-end">
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
+
+    {% if students %}
+    <form method="post" class="mt-4">
+        {% csrf_token %}
+        <input type="hidden" name="subject" value="{{ selected_subject.id }}">
+        <input type="hidden" name="classroom" value="{{ selected_class.id }}">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Select</th>
+                    <th>Student Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <input type="checkbox" name="students" value="{{ student.id }}"
+                               {% if student.id in enrolled_student_ids %}checked{% endif %}>
+                    </td>
+                    <td>{{ student.user.get_full_name }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" name="save_assignments" class="btn btn-success">Save Assignments</button>
+    </form>
+    {% endif %}
+</div>
+
+{% endblock %}

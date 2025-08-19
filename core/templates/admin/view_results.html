@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Results</h2>
+
+    <!-- Filter Form -->
+    <form method="get" action="{% url 'admin_view_results' %}" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <select name="class_id" class="form-select">
+                <option value="">-- Select Class --</option>
+                {% for c in classes %}
+                    <option value="{{ c.id }}" {% if selected_class_id == c.id|stringformat:"s" %}selected{% endif %}>
+                        {{ c.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="term_id" class="form-select">
+                <option value="">-- Select Term --</option>
+                {% for t in terms %}
+                    <option value="{{ t.id }}" {% if selected_term_id == t.id|stringformat:"s" %}selected{% endif %}>
+                        {{ t.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="session_id" class="form-select">
+                <option value="">-- Select Session --</option>
+                {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if selected_session_id == s.id|stringformat:"s" %}selected{% endif %}>
+                        {{ s.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Bulk Lock/Unlock Button -->
+    {% if selected_class_id and selected_term_id and selected_session_id and results %}
+        <div class="mb-3">
+            <a href="{% url 'toggle_class_results_lock' selected_class_id selected_term_id selected_session_id %}"
+               class="btn {% if results.0.locked %}btn-warning{% else %}btn-primary{% endif %}">
+               {% if results.0.locked %}Unlock{% else %}Lock{% endif %} All Results for {{ results.0.student.classroom.name }}
+            </a>
+        </div>
+    {% endif %}
+
+    <!-- Results Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Student</th>
+                    <th>Subject</th>
+                    <th>Total Score</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for result in results %}
+                <tr>
+                    <td>{{ result.student.user.get_full_name }}</td>
+                    <td>{{ result.subject.name }}</td>
+                    <td>{{ result.total_score }}</td>
+                    <td>
+                        {% if result.locked %}
+                            <span class="badge bg-danger">Locked</span>
+                        {% else %}
+                            <span class="badge bg-success">Unlocked</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No results found.</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

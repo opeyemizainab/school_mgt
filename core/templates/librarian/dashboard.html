@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}Librarian Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex">
+    <!-- Sidebar -->
+    <div class="bg-dark text-white p-3" style="width: 250px; min-height: 100vh;">
+        <h4 class="mb-4">📚 Librarian Panel</h4>
+        <a href="{% url 'librarian_dashboard' %}" class="btn btn-outline-light w-100 mb-2">🏠 Dashboard</a>
+        <a href="{% url 'add_book' %}" class="btn btn-outline-light w-100 mb-2">➕ Add Book</a>
+        <a href="{% url 'view_books' %}" class="btn btn-outline-light w-100 mb-2">📋 View Books</a>
+        <a href="{% url 'borrow_book' %}" class="btn btn-outline-light w-100 mb-2">📦 Borrow Book</a>
+        <a href="{% url 'return_book' %}" class="btn btn-outline-light w-100 mb-2">🔄 Return Book</a>
+        <a href="{% url 'borrow_history' %}" class="btn btn-outline-light w-100 mb-2">📝 Borrow History</a>
+        <a href="{% url 'logout' %}" class="btn btn-outline-light w-100">🚪 Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="p-4" style="flex-grow: 1;">
+        <h2>Welcome, {{ request.user.get_full_name }} (Librarian)</h2>
+        <p>Use the menu to manage books, track borrowing, and return records.</p>
+
+        <div class="row mt-4">
+            <div class="col-md-4">
+                <div class="card shadow border-0">
+                    <div class="card-body text-center">
+                        <h5>Books in Library</h5>
+                        <h2>{{ total_books }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow border-0">
+                    <div class="card-body text-center">
+                        <h5>Books Borrowed</h5>
+                        <h2>{{ borrowed_books }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow border-0">
+                    <div class="card-body text-center">
+                        <h5>Overdue Books</h5>
+                        <h2>{{ overdue_books }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

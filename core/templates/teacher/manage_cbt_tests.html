@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back to Dashboard -->
+    <div class="mb-3">
+        <a href="{% url 'teacher_dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Teacher Dashboard
+        </a>
+        <a href="{% url 'create_cbt_test' %}" class="btn btn-success ms-2">
+            <i class="bi bi-plus-circle"></i> Create New Test
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Your CBT Tests</h4>
+        </div>
+        <div class="card-body">
+
+            {% if tests %}
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Title</th>
+                                <th>Subject</th>
+                                <th>Class</th>
+                                <th>Term</th>
+                                <th>Session</th>
+                                <th>Duration</th>
+                                <th>Total Questions</th>
+                                <th>Start</th>
+                                <th>End</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for test in tests %}
+                            <tr>
+                                <td>{{ test.title }}</td>
+                                <td>{{ test.subject.name }}</td>
+                                <td>{{ test.classroom.name }}</td>
+                                <td>{{ test.term }}</td>
+                                <td>{{ test.session }}</td>
+                                <td>{{ test.duration_minutes }} min</td>
+                                <td>{{ test.total_questions }}</td>
+                                <td>{{ test.start_time|date:"Y-m-d H:i" }}</td>
+                                <td>{{ test.end_time|date:"Y-m-d H:i" }}</td>
+                                <td>
+                                    <a href="{% url 'edit_cbt_test' test.id %}" class="btn btn-sm btn-warning me-1">
+                                        <i class="bi bi-pencil-square"></i> Edit
+                                    </a>
+                                    <a href="{% url 'delete_cbt_test' test.id %}" class="btn btn-sm btn-danger me-1">
+                                        <i class="bi bi-trash"></i> Delete
+                                    </a>
+                                    <a href="{% url 'add_cbt_question' test.id %}" class="btn btn-sm btn-info me-1">
+                                        <i class="bi bi-question-circle"></i> Add Questions
+                                    </a>
+                                    <a href="{% url 'teacher_cbt_results' test.id %}" class="btn btn-sm btn-secondary me-1">
+                                        <i class="bi bi-bar-chart"></i> Results
+                                    </a>
+                                    {% if test.is_active %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                        <a href="{% url 'activate_cbt_test' test.id %}" class="btn btn-sm btn-outline-success">
+                                            Activate
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    You haven't created any tests yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

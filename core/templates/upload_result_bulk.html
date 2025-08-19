@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back Button -->
+    <div class="mb-3">
+        <a href="{% url 'upload_result' %}" class="btn btn-secondary">
+            ← Back to Selection
+        </a>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                Upload Results — {{ classroom.name }} | {{ subject.name }} | {{ term.name }} | {{ session_val.name }}
+            </h4>
+        </div>
+        <div class="card-body">
+
+            {% if locked %}
+                <div class="alert alert-danger">
+                    <strong>Locked:</strong> Results for this class, subject, term, and session have already been submitted.
+                    Please contact the admin if you need to make changes.
+                </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
+                
+                <!-- Hidden IDs to keep selection -->
+                <input type="hidden" name="classroom_id" value="{{ classroom.pk }}">
+                <input type="hidden" name="subject_id" value="{{ subject.pk }}">
+                <input type="hidden" name="term_id" value="{{ term.pk }}">
+                <input type="hidden" name="session_id" value="{{ session_val.pk }}">
+
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Student</th>
+                                <th>Test Score (max 40)</th>
+                                <th>Exam Score (max 60)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in students %}
+                            {% with score=scores.student.id %}
+                            <tr>
+                                <td>{{ student.user.get_full_name }}</td>
+                                <td>
+                                    <input type="number" name="test_score_{{ student.id }}" 
+                                           class="form-control" step="0.01" min="0" max="40"
+                                           value="{% if scores.student.id %}{{ scores.student.id.test_score }}{% endif %}"
+                                           {% if locked %}disabled{% endif %}>
+                                </td>
+                                <td>
+                                    <input type="number" name="exam_score_{{ student.id }}" 
+                                           class="form-control" step="0.01" min="0" max="60"
+                                           value="{% if scores.student.id %}{{ scores.student.id.exam_score }}{% endif %}"
+                                           {% if locked %}disabled{% endif %}>
+                                </td>
+                            </tr>
+                            {% endwith %}
+                            {% empty %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">No students found for this selection.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                {% if not locked %}
+                <div class="text-end">
+                    <button type="submit" name="save_results" class="btn btn-success">
+                        <i class="bi bi-save"></i> Save Results
+                    </button>
+                </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

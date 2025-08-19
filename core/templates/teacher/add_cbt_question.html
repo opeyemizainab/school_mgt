@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back Links -->
+    <div class="mb-3">
+        <a href="{% url 'manage_cbt_tests' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Manage Tests
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Add Question for: {{ test.title }}</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add Question
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Questions -->
+    <div class="card shadow">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Existing Questions</h5>
+        </div>
+        <div class="card-body">
+            {% if questions %}
+                <ol class="list-group list-group-numbered">
+                    {% for q in questions %}
+                        <li class="list-group-item">
+                            <p class="fw-bold">{{ q.question_text }}</p>
+                            <ul class="mb-2">
+                                <li>A. {{ q.option_a }}</li>
+                                <li>B. {{ q.option_b }}</li>
+                                <li>C. {{ q.option_c }}</li>
+                                <li>D. {{ q.option_d }}</li>
+                            </ul>
+                            <span class="badge bg-success">Correct: {{ q.correct_option }}</span>
+                            <div class="mt-2">
+                                <a href="{% url 'edit_cbt_question' q.id %}" class="btn btn-sm btn-warning me-1">
+                                    <i class="bi bi-pencil-square"></i> Edit
+                                </a>
+                                <a href="{% url 'delete_cbt_question' q.id %}" class="btn btn-sm btn-danger">
+                                    <i class="bi bi-trash"></i> Delete
+                                </a>
+                            </div>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% else %}
+                <div class="alert alert-info">
+                    No questions added yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block title %}Edit Student{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">Edit Student Information</h2>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Update Student</button>
+        <a href="{% url 'manage_students' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

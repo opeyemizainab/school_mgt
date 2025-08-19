@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: 12px;
+            margin: 30px;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .header h2 {
+            margin: 0;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+        .header h4 {
+            margin: 2px 0;
+            font-size: 14px;
+            color: #555;
+        }
+        .meta {
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+        .meta strong {
+            color: #000;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #444;
+            padding: 6px;
+            text-align: center;
+        }
+        th {
+            background-color: #f7f7f7;
+            font-weight: bold;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        .footer {
+            margin-top: 40px;
+            font-size: 12px;
+        }
+        .signature {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature div {
+            width: 30%;
+            text-align: center;
+            border-top: 1px solid #000;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>School Name</h2>
+        <h4>Student Result Sheet</h4>
+    </div>
+
+    <p class="meta">
+        <strong>Student:</strong> {{ student.user.get_full_name }} <br>
+        <strong>Class:</strong> {{ student.classroom.name|default:"-" }} <br>
+        <strong>Session:</strong> {{ selected_session|default:"-" }} |
+        <strong>Term:</strong> {{ selected_term|default:"-" }}
+    </p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Subject</th>
+                <th>Test Score</th>
+                <th>Exam Score</th>
+                <th>Total</th>
+                <th>Grade</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for result in results %}
+            <tr>
+                <td>{{ result.subject.name }}</td>
+                <td>{{ result.test_score }}</td>
+                <td>{{ result.exam_score }}</td>
+                <td>{{ result.total_score }}</td>
+                <td>{{ result.grade }}</td>
+                <td>{{ result.comment }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6">No results available</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="footer">
+        <p><em>This is a system-generated result sheet and does not require a physical signature.</em></p>
+        <div class="signature">
+            <div>Class Teacher</div>
+            <div>Principal</div>
+        </div>
+    </div>
+</body>
+</html>

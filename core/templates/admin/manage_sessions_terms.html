@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}Manage Sessions & Terms{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">Manage Sessions & Terms</h2>
+
+    <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary mb-3">← Back to Dashboard</a>
+
+    <div class="row">
+        <!-- Sessions -->
+        <div class="col-md-6">
+            <h4>Sessions</h4>
+            <form method="post" action="{% url 'add_session' %}" class="d-flex mb-3">
+                {% csrf_token %}
+                <input type="text" name="name" class="form-control me-2" placeholder="e.g. 2024/2025" required>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+            <ul class="list-group">
+                {% for session in sessions %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ session.name }}
+                    {% if session.is_current %}
+                        <span class="badge bg-success">Current</span>
+                    {% else %}
+                        <a href="{% url 'set_current_session' session.id %}" class="btn btn-sm btn-outline-primary">Set Current</a>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li class="list-group-item">No sessions yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <!-- Terms -->
+        <div class="col-md-6">
+            <h4>Terms</h4>
+            <form method="post" action="{% url 'add_term' %}" class="d-flex mb-3">
+                {% csrf_token %}
+                <input type="text" name="name" class="form-control me-2" placeholder="e.g. First Term" required>
+                <button type="submit" class="btn btn-primary">Add</button>
+            </form>
+            <ul class="list-group">
+                {% for term in terms %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {{ term.name }}
+                    {% if term.is_current %}
+                        <span class="badge bg-success">Current</span>
+                    {% else %}
+                        <a href="{% url 'set_current_term' term.id %}" class="btn btn-sm btn-outline-primary">Set Current</a>
+                    {% endif %}
+                </li>
+                {% empty %}
+                <li class="list-group-item">No terms yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

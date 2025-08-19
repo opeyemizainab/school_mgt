@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Borrow Book{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">📚 Borrow Book via Barcode</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                
+                <!-- Student Barcode -->
+                <div class="col-md-6">
+                    <label class="form-label">Student ID Barcode</label>
+                    <input type="text" name="student_barcode" 
+                           class="form-control" autofocus required 
+                           placeholder="Scan Student ID Card">
+                </div>
+
+                <!-- Book Barcode -->
+                <div class="col-md-6">
+                    <label class="form-label">Book Barcode</label>
+                    <input type="text" name="book_barcode" 
+                           class="form-control" required 
+                           placeholder="Scan Book Barcode">
+                </div>
+
+                <div class="col-12 text-end">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Borrow Book
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Display Messages -->
+    {% if messages %}
+        <div class="mt-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Teacher{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-primary">Edit Teacher Information</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- Account Info -->
+        <h4 class="text-secondary">Account Information</h4>
+        {% for field in user_form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <hr>
+
+        <!-- Profile Info -->
+        <h4 class="text-secondary">Teacher Profile Information</h4>
+        {% for field in profile_form %}
+            <div class="mb-3">
+                <label class="form-label">{{ field.label }}</label>
+                {{ field }}
+                {% if field.errors %}
+                    <div class="text-danger">{{ field.errors }}</div>
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <hr>
+
+        <!-- Class / Subject matrix -->
+        <h4 class="text-secondary">Assign Subjects per Class</h4>
+        <p class="text-muted">For each class, tick the subjects this teacher will teach.</p>
+        <div class="border rounded p-3 bg-light mb-4">
+            {% for classroom in all_classes %}
+                <div class="mb-3">
+                    <h6 class="mb-2">{{ classroom.name }}</h6>
+                    <div class="row">
+                        {% for subject in all_subjects %}
+                            <div class="col-md-3 col-sm-4 col-6 mb-1">
+                                {% comment %}
+                                    We create a key like "classId_subjectId" and check membership in assigned_keys.
+                                    The key is built with add filter: classroom.id|add:"_"|add:subject.id
+                                {% endcomment %}
+                                {% with key=classroom.id|add:"_"|add:subject.id %}
+                                    <div class="form-check">
+                                        <input class="form-check-input"
+                                               type="checkbox"
+                                               name="subjects_{{ classroom.id }}"
+                                               id="c{{ classroom.id }}_s{{ subject.id }}"
+                                               value="{{ subject.id }}"
+                                               {% if key in assigned_keys %}checked{% endif %}>
+                                        <label class="form-check-label" for="c{{ classroom.id }}_s{{ subject.id }}">
+                                            {{ subject.name }}
+                                        </label>
+                                    </div>
+                                {% endwith %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% empty %}
+                <p class="text-danger">No classes available.</p>
+            {% endfor %}
+        </div>
+
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary">Update Teacher</button>
+            <a href="{% url 'manage_teachers' %}" class="btn btn-secondary ms-2">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

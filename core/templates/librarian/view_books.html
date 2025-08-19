@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}View Books{% endblock %}
+{% block content %}
+<h2>Books</h2>
+<table border="1">
+<tr><th>Title</th><th>Author</th><th>ISBN</th><th>Quantity</th></tr>
+{% for book in books %}
+<tr>
+<td>{{ book.title }}</td>
+<td>{{ book.author }}</td>
+<td>{{ book.isbn }}</td>
+<td>{{ book.quantity }}</td>
+</tr>
+{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Manage Results</h2>
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Filter Form -->
+    <form method="get" action="{% url 'admin_view_results' %}" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <select name="class_id" class="form-select">
+                <option value="">-- Select Class --</option>
+                {% for c in classes %}
+                    <option value="{{ c.id }}" {% if selected_class_id == c.id|stringformat:"s" %}selected{% endif %}>
+                        {{ c.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="term_id" class="form-select">
+                <option value="">-- Select Term --</option>
+                {% for t in terms %}
+                    <option value="{{ t.id }}" {% if selected_term_id == t.id|stringformat:"s" %}selected{% endif %}>
+                        {{ t.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <select name="session_id" class="form-select">
+                <option value="">-- Select Session --</option>
+                {% for s in sessions %}
+                    <option value="{{ s.id }}" {% if selected_session_id == s.id|stringformat:"s" %}selected{% endif %}>
+                        {{ s.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    {% if selected_class_id and selected_term_id and selected_session_id and has_results %}
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                {% if class_obj and term_obj and session_obj %}
+                    <strong>Scope:</strong>
+                    {{ class_obj.name }} &middot; {{ term_obj.name }} &middot; {{ session_obj.name }}
+                {% endif %}
+                <span class="ms-2 badge {% if all_locked %}bg-danger{% else %}bg-success{% endif %}">
+                    {% if all_locked %}Locked{% else %}Unlocked{% endif %}
+                </span>
+            </div>
+            <a href="{% url 'toggle_class_results_lock' selected_class_id selected_term_id selected_session_id %}"
+               class="btn {% if all_locked %}btn-warning{% else %}btn-primary{% endif %}">
+               {% if all_locked %}Unlock{% else %}Lock{% endif %} All Results
+            </a>
+        </div>
+    {% endif %}
+
+    {% if students %}
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Student Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                        <tr>
+                            <td>{{ student.user.get_full_name }}</td>
+                            <td>
+                                <a href="{% url 'admin_student_results_detail' student.id selected_term_id selected_session_id %}"
+                                   class="btn btn-sm btn-info">
+                                    View Results
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif selected_class_id %}
+        <p class="text-muted">No students found for selected filters.</p>
+    {% endif %}
+</div>
+{% endblock %}

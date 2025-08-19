@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- Back Link -->
+    <div class="mb-3">
+        <a href="{% url 'manage_cbt_tests' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Manage Tests
+        </a>
+    </div>
+
+    <!-- Edit CBT Test Card -->
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Edit CBT Test</h4>
+        </div>
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+
+                <div class="col-md-6">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" value="{{ test.title }}" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Term</label>
+                    <input type="text" name="term" value="{{ test.term }}" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Session</label>
+                    <input type="text" name="session" value="{{ test.session }}" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Duration (minutes)</label>
+                    <input type="number" name="duration_minutes" value="{{ test.duration_minutes }}" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Total Questions</label>
+                    <input type="number" name="total_questions" value="{{ test.total_questions }}" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">Start Time</label>
+                    <input type="datetime-local" name="start_time" value="{{ test.start_time|date:'Y-m-d\\TH:i' }}" class="form-control" required>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label">End Time</label>
+                    <input type="datetime-local" name="end_time" value="{{ test.end_time|date:'Y-m-d\\TH:i' }}" class="form-control" required>
+                </div>
+
+                <div class="col-12 mt-4 d-flex justify-content-end gap-2">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-save"></i> Update Test
+                    </button>
+                    <a href="{% url 'manage_cbt_tests' %}" class="btn btn-secondary">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

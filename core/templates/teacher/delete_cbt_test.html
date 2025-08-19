@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-5">
+
+    <!-- Back Link -->
+    <div class="mb-3">
+        <a href="{% url 'manage_cbt_tests' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Back to Manage Tests
+        </a>
+    </div>
+
+    <!-- Confirmation Card -->
+    <div class="card shadow border-danger">
+        <div class="card-header bg-danger text-white">
+            <h4 class="mb-0">Delete CBT Test</h4>
+        </div>
+        <div class="card-body text-center">
+            <p class="fs-5">
+                Are you sure you want to delete the test:
+            </p>
+            <blockquote class="blockquote">
+                <p class="mb-0"><strong>{{ test.title }}</strong></p>
+            </blockquote>
+
+            <form method="post" class="mt-4 d-flex justify-content-center gap-2">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="bi bi-trash"></i> Yes, Delete
+                </button>
+                <a href="{% url 'manage_cbt_tests' %}" class="btn btn-secondary">
+                    Cancel
+                </a>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

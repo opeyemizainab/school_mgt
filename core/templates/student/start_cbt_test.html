@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ test.title }} - CBT Test{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">{{ test.title }} - CBT Test</h4>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+
+                {% for question in questions %}
+                    <div class="mb-4">
+                        <p class="fw-bold">{{ forloop.counter }}. {{ question.question_text }}</p>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="A" id="q{{ question.id }}_a">
+                            <label class="form-check-label" for="q{{ question.id }}_a">A. {{ question.option_a }}</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="B" id="q{{ question.id }}_b">
+                            <label class="form-check-label" for="q{{ question.id }}_b">B. {{ question.option_b }}</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="C" id="q{{ question.id }}_c">
+                            <label class="form-check-label" for="q{{ question.id }}_c">C. {{ question.option_c }}</label>
+                        </div>
+
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="question_{{ question.id }}" value="D" id="q{{ question.id }}_d">
+                            <label class="form-check-label" for="q{{ question.id }}_d">D. {{ question.option_d }}</label>
+                        </div>
+                    </div>
+                    <hr>
+                {% endfor %}
+
+                <div class="text-end">
+                    <button type="submit" class="btn btn-success btn-lg">
+                        ✅ Submit Test
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

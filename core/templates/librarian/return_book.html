@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}Return Book{% endblock %}
+{% block content %}
+<h2>Return Book</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Return</button>
+</form>
+{% endblock %}

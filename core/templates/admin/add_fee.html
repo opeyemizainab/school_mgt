@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Add Fee</h2>
+    <form method="post">
+        {% csrf_token %}
+        <div class="card p-4 shadow-sm">
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-success mt-3">Save Fee</button>
+            <a href="{% url 'manage_fees' %}" class="btn btn-secondary mt-3">Cancel</a>
+        </div>
+	<div class="mb-3">
+         <label for="due_date" class="form-label">Due Date</label>
+           <input type="date" class="form-control" id="due_date" name="due_date" required>
+         </div>
+
+
+    </form>
+</div>
+{% endblock %}

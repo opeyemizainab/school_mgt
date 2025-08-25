@@ -1260,19 +1260,6 @@ def create_cbt_test(request):
         'classes': classes,
     })
 
-@login_required
-def manage_cbt_tests(request):
-    try:
-        teacher_profile = TeacherProfile.objects.get(user=request.user)
-    except TeacherProfile.DoesNotExist:
-        return HttpResponse("Teacher profile not found", status=404)
-
-    tests = CBTTest.objects.filter(teacher=teacher_profile).order_by('-created_at')
-
-    return render(request, 'teacher/manage_cbt_tests.html', {
-        'tests': tests
-    })
-
 
 # Edit CBT Test
 @login_required
@@ -1369,12 +1356,19 @@ def activate_cbt_test(request, test_id):
     messages.success(request, 'Test activated successfully.')
     return redirect('manage_cbt_tests')
 
+# =========================
+# CBT - Student Views
+# =========================
+
 @login_required
 def available_cbts(request):
     if request.user.user_type != 'student':
         return HttpResponse("Unauthorized", status=401)
 
+    # ✅ Get StudentProfile
     student_profile = get_object_or_404(StudentProfile, user=request.user)
+
+    # ✅ Show only tests for the student's classroom
     class_cbts = CBTTest.objects.filter(
         is_active=True,
         classroom=student_profile.classroom
@@ -1388,14 +1382,18 @@ def available_cbts(request):
 @login_required
 def start_cbt_test(request, test_id):
     test = get_object_or_404(CBTTest, id=test_id, is_active=True)
-    
-    if CBTSubmission.objects.filter(student=request.user, test=test).exists():
+
+    # ✅ Get StudentProfile
+    student_profile = get_object_or_404(StudentProfile, user=request.user)
+
+    # ✅ Prevent multiple submissions
+    if CBTSubmission.objects.filter(student=student_profile, test=test).exists():
         return render(request, 'student/cbt_already_taken.html', {'test': test})
 
     questions = CBTQuestion.objects.filter(test=test)
 
     if request.method == 'POST':
-        submission = CBTSubmission.objects.create(student=request.user, test=test)
+        submission = CBTSubmission.objects.create(student=student_profile, test=test)
         for question in questions:
             answer_key = f"question_{question.id}"
             selected_option = request.POST.get(answer_key)
@@ -1405,23 +1403,21 @@ def start_cbt_test(request, test_id):
                     question=question,
                     selected_option=selected_option
                 )
-        # ✅ Redirect to result page
         return redirect('view_cbt_result', submission_id=submission.id)
 
     return render(request, 'student/start_cbt_test.html', {'test': test, 'questions': questions})
 
+
 @login_required
 def view_cbt_result(request, submission_id):
-    submission = get_object_or_404(CBTSubmission, id=submission_id, student=request.user)
+    # ✅ Get StudentProfile
+    student_profile = get_object_or_404(StudentProfile, user=request.user)
+
+    submission = get_object_or_404(CBTSubmission, id=submission_id, student=student_profile)
     answers = CBTAnswer.objects.filter(submission=submission)
 
     total_questions = answers.count()
-    correct_answers = 0
-
-    for answer in answers:
-        if answer.selected_option == answer.question.correct_option:
-            correct_answers += 1
-
+    correct_answers = sum(1 for ans in answers if ans.selected_option == ans.question.correct_option)
     score_percentage = (correct_answers / total_questions) * 100 if total_questions > 0 else 0
 
     return render(request, 'student/cbt_result.html', {
@@ -1432,19 +1428,14 @@ def view_cbt_result(request, submission_id):
         'percentage': round(score_percentage, 2),
     })
 
-from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
-from core.models import StudentProfile, CBTSubmission
 
 @login_required
 def view_cbt_results(request):
     if request.user.user_type != 'student':
         return HttpResponse("Unauthorized", status=401)
 
-    try:
-        student_profile = StudentProfile.objects.get(user=request.user)
-    except StudentProfile.DoesNotExist:
-        return HttpResponse("Student profile not found.", status=404)
+    # ✅ Get StudentProfile
+    student_profile = get_object_or_404(StudentProfile, user=request.user)
 
     submissions = CBTSubmission.objects.filter(student=student_profile).order_by('-submitted_at')
 
@@ -1455,11 +1446,26 @@ def view_cbt_results(request):
 
 from operator import itemgetter
 
+# =========================
+# CBT - Teacher Views
+# =========================
+
+@login_required
+def manage_cbt_tests(request):
+    try:
+        teacher_profile = TeacherProfile.objects.get(user=request.user)
+    except TeacherProfile.DoesNotExist:
+        return HttpResponse("Teacher profile not found", status=404)
+
+    tests = CBTTest.objects.filter(teacher=teacher_profile).order_by('-created_at')
+    return render(request, 'teacher/manage_cbt_tests.html', {'tests': tests})
+
+
 @login_required
 def teacher_cbt_results(request, test_id):
     test = get_object_or_404(CBTTest, id=test_id, teacher__user=request.user)
 
-    submissions = CBTSubmission.objects.filter(test=test).select_related('student')
+    submissions = CBTSubmission.objects.filter(test=test).select_related('student__user')
     result_data = []
 
     for sub in submissions:
@@ -1469,7 +1475,7 @@ def teacher_cbt_results(request, test_id):
         percentage = (correct / total) * 100 if total > 0 else 0
 
         result_data.append({
-            'student': sub.student.get_full_name(),
+            'student': sub.student.user.get_full_name() or sub.student.user.username,  # ✅ fixed
             'submitted_at': sub.submitted_at,
             'score': correct,
             'total': total,
@@ -1477,7 +1483,7 @@ def teacher_cbt_results(request, test_id):
         })
 
     # Sort result_data by score descending
-    result_data.sort(key=itemgetter('score'), reverse=True)
+    result_data.sort(key=lambda x: x['score'], reverse=True)
 
     # Assign ranks
     rank = 1

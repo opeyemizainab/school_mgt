@@ -16,7 +16,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ===========================
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = ["*", ".railway.app"]
 CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]

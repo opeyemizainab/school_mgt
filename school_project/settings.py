@@ -4,24 +4,25 @@ Django settings for school_project project.
 
 import os
 from pathlib import Path
-import dj_database_url   # <-- added for Railway database
+import dj_database_url
 
-# Build paths inside the project
+# ===========================
+# Paths
+# ===========================
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # ===========================
-# Security / Debug
+# Security
 # ===========================
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 
-# ⚠️ DEBUG set to True temporarily to see full error messages on Railway
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 ALLOWED_HOSTS = ["*", ".railway.app"]
 CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
 
 # ===========================
-# Application definition
+# Applications
 # ===========================
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -35,7 +36,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",   # <— serving static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",   # static files in production
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -65,11 +66,13 @@ TEMPLATES = [
 WSGI_APPLICATION = "school_project.wsgi.application"
 
 # ===========================
-# Database (Railway Postgres or fallback SQLite)
+# Database
 # ===========================
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
-    DATABASES = {"default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)}
+    DATABASES = {
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+    }
 else:
     DATABASES = {
         "default": {
@@ -79,7 +82,7 @@ else:
     }
 
 # ===========================
-# Password validation
+# Passwords
 # ===========================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -101,29 +104,24 @@ USE_TZ = True
 # ===========================
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
-
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# WhiteNoise + default file storage
 STORAGES = {
-    "default": {  # for uploads (student photos, etc.)
+    "default": {  # uploaded files (photos, etc.)
         "BACKEND": "django.core.files.storage.FileSystemStorage",
-        "OPTIONS": {
-            "location": MEDIA_ROOT,
-        },
+        "OPTIONS": {"location": MEDIA_ROOT},
     },
-    "staticfiles": {  # for static files
+    "staticfiles": {  # static assets
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
 # ===========================
-# Other settings
+# Other
 # ===========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 AUTH_USER_MODEL = "core.User"
 LOGIN_URL = "/login/"

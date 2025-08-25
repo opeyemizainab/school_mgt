@@ -1432,12 +1432,21 @@ def view_cbt_result(request, submission_id):
         'percentage': round(score_percentage, 2),
     })
 
+from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
+from core.models import StudentProfile, CBTSubmission
+
 @login_required
 def view_cbt_results(request):
     if request.user.user_type != 'student':
         return HttpResponse("Unauthorized", status=401)
 
-    submissions = CBTSubmission.objects.filter(student=request.user).order_by('-submitted_at')
+    try:
+        student_profile = StudentProfile.objects.get(user=request.user)
+    except StudentProfile.DoesNotExist:
+        return HttpResponse("Student profile not found.", status=404)
+
+    submissions = CBTSubmission.objects.filter(student=student_profile).order_by('-submitted_at')
 
     return render(request, 'student/cbt_results_list.html', {
         'submissions': submissions

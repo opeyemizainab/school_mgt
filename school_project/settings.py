@@ -32,6 +32,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "core",
+
+    # ✅ Cloudinary for media storage
+    "cloudinary_storage",
+    "cloudinary",
 ]
 
 MIDDLEWARE = [
@@ -106,17 +110,22 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+# ✅ Media storage
+if os.environ.get("CLOUDINARY_URL"):
+    # Use Cloudinary in production
+    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
+    MEDIA_URL = "/media/"   # Django still needs this for references
+else:
+    # Fallback to local file storage (development)
+    MEDIA_URL = "/media/"
+    MEDIA_ROOT = BASE_DIR / "media"
+    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
 
+# ✅ Static files via WhiteNoise
 STORAGES = {
-    "default": {  # uploaded files (photos, etc.)
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
-        "OPTIONS": {"location": MEDIA_ROOT},
-    },
-    "staticfiles": {  # static assets
+    "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
+    }
 }
 
 # ===========================

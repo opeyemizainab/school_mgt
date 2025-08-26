@@ -19,6 +19,7 @@
         <a href="{% url 'available_cbts' %}" class="btn w-100 text-start mb-2 {% if request.resolver_match.url_name == 'available_cbts' %}btn-primary{% else %}btn-outline-light{% endif %}">
             <i class="bi bi-pencil-square me-2"></i> Available CBTs
         </a>
+	
         <a href="{% url 'view_cbt_results' %}" class="btn w-100 text-start mb-2 {% if request.resolver_match.url_name == 'view_cbt_results' %}btn-primary{% else %}btn-outline-light{% endif %}">
             <i class="bi bi-bar-chart-line me-2"></i> CBT Results
         </a>

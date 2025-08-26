@@ -16,10 +16,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # ===========================
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 
+# Toggle debug with env variable
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = ["*", ".railway.app"]
-CSRF_TRUSTED_ORIGINS = ["https://*.railway.app"]
+# Set hosts dynamically
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
+CSRF_TRUSTED_ORIGINS = [
+    origin for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if origin
+]
 
 # ===========================
 # Applications
@@ -75,7 +79,7 @@ WSGI_APPLICATION = "school_project.wsgi.application"
 DATABASE_URL = os.environ.get("DATABASE_URL")
 if DATABASE_URL:
     DATABASES = {
-        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600)
+        "default": dj_database_url.parse(DATABASE_URL, conn_max_age=600, ssl_require=True)
     }
 else:
     DATABASES = {
@@ -113,7 +117,7 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# ✅ Explicit storage config (default + staticfiles)
+# ✅ Explicit storage config
 STORAGES = {
     "default": {
         "BACKEND": (
@@ -128,30 +132,33 @@ STORAGES = {
 }
 
 # ===========================
-# Other
+# Auth
 # ===========================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.User"
 LOGIN_URL = "/login/"
 
 # ===========================
-# Debugging & Logging (for Railway)
+# Security for production
 # ===========================
-if "RAILWAY_ENVIRONMENT" in os.environ:
-    DEBUG_PROPAGATE_EXCEPTIONS = True
-    DEBUG = True
-    ALLOWED_HOSTS = ["*"]
+if not DEBUG:
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
 
+# ===========================
+# Logging
+# ===========================
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "console": {
-            "class": "logging.StreamHandler",
-        },
+        "console": {"class": "logging.StreamHandler"},
     },
     "root": {
         "handlers": ["console"],
-        "level": "DEBUG",
+        "level": "DEBUG" if DEBUG else "INFO",
     },
 }

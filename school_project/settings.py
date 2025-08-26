@@ -6,7 +6,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-# Railway domain or use "*" temporarily
+# Railway domain or use "*" temporarily (replace with your Railway domain later)
 ALLOWED_HOSTS = ["*"]
 
 # SECRET KEY from environment
@@ -20,12 +20,12 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # your apps here
+    # add your custom apps here
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",  # Added for static files
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # Needed for serving static files on Railway
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -39,7 +39,7 @@ ROOT_URLCONF = "school_mgt.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [BASE_DIR / "templates"],
+        "DIRS": [BASE_DIR / "templates"],  # your templates folder
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -54,10 +54,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "school_mgt.wsgi.application"
 
-# Database
+# Database - Railway provides Postgres environment variables
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.postgresql",  # Railway uses Postgres by default
+        "ENGINE": "django.db.backends.postgresql",
         "NAME": os.getenv("PGDATABASE"),
         "USER": os.getenv("PGUSER"),
         "PASSWORD": os.getenv("PGPASSWORD"),
@@ -85,4 +85,5 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# Default primary key field type
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

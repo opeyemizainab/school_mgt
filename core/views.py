@@ -899,8 +899,20 @@ def delete_teacher(request, teacher_id):
         return HttpResponse("Unauthorized", status=401)
 
     teacher = get_object_or_404(TeacherProfile, id=teacher_id)
-    teacher.delete()
-    messages.success(request, 'Teacher deleted successfully.')
+
+    # Try to get the linked user safely
+    try:
+        teacher_user = teacher.user
+    except User.DoesNotExist:
+        teacher_user = None
+
+    # Delete both TeacherProfile and User in a transaction
+    with transaction.atomic():
+        teacher.delete()
+        if teacher_user:
+            teacher_user.delete()
+
+    messages.success(request, "Teacher deleted successfully.")
     return redirect('manage_teachers')
 
 
@@ -910,7 +922,13 @@ def edit_teacher(request, teacher_id):
         return HttpResponse("Unauthorized", status=401)
 
     profile = get_object_or_404(TeacherProfile, id=teacher_id)
-    teacher_user = profile.user
+
+    # ✅ Ensure teacher_user exists (prevent crash if User missing)
+    try:
+        teacher_user = profile.user
+    except User.DoesNotExist:
+        messages.error(request, "⚠ This teacher has no linked user account.")
+        return redirect('manage_teachers')
 
     # --- Forms for basic info ---
     class TeacherUserForm(forms.ModelForm):
@@ -932,7 +950,7 @@ def edit_teacher(request, teacher_id):
 
     # Build a set of assigned "class_subject" keys for pre-checking (e.g. "3_5")
     existing_assignments = ClassAssignment.objects.filter(teacher=profile)
-    assigned_keys = { f"{a.classroom_id}_{a.subject_id}" for a in existing_assignments }
+    assigned_keys = {f"{a.classroom_id}_{a.subject_id}" for a in existing_assignments}
 
     if request.method == 'POST':
         user_form = TeacherUserForm(request.POST, instance=teacher_user)
@@ -942,25 +960,22 @@ def edit_teacher(request, teacher_id):
             user_form.save()
             profile_form.save()
 
-            # Update assignments in a transaction: delete old -> create new from submitted checkboxes
+            # Update assignments in a transaction: delete old -> create new
             with transaction.atomic():
-                # Remove all existing assignments for this teacher
                 ClassAssignment.objects.filter(teacher=profile).delete()
 
-                # For every class, read the list of selected subject ids from POST:
                 for classroom in all_classes:
-                    selected_subject_ids = request.POST.getlist(f"subjects_{classroom.id}")  # list of strings
+                    selected_subject_ids = request.POST.getlist(f"subjects_{classroom.id}")
                     for subj_id in selected_subject_ids:
                         try:
                             subject_obj = Subject.objects.get(id=int(subj_id))
+                            ClassAssignment.objects.create(
+                                teacher=profile,
+                                classroom=classroom,
+                                subject=subject_obj
+                            )
                         except (Subject.DoesNotExist, ValueError):
-                            # ignore invalid ids
                             continue
-                        ClassAssignment.objects.create(
-                            teacher=profile,
-                            classroom=classroom,
-                            subject=subject_obj
-                        )
 
             messages.success(request, 'Teacher updated successfully.')
             return redirect('manage_teachers')
@@ -975,11 +990,11 @@ def edit_teacher(request, teacher_id):
         'profile_form': profile_form,
         'all_classes': all_classes,
         'all_subjects': all_subjects,
-        # pass assigned keys as list of strings like "classid_subjectid"
         'assigned_keys': list(assigned_keys),
         'teacher': profile,
     }
     return render(request, 'admin/edit_teacher.html', context)
+
 
 # --- Admin: Manage Classes ---
 

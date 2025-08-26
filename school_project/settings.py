@@ -19,11 +19,16 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 # Toggle debug with env variable
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
-# Set hosts dynamically
-ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
-CSRF_TRUSTED_ORIGINS = [
-    origin for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",") if origin
-]
+# Allow Railway & localhost
+RAILWAY_URL = os.environ.get("APP_URL")  # Railway sets this automatically
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+if RAILWAY_URL:
+    ALLOWED_HOSTS.append(RAILWAY_URL.replace("https://", "").replace("http://", ""))
+
+# CSRF Trusted Origins (must be https)
+CSRF_TRUSTED_ORIGINS = []
+if RAILWAY_URL:
+    CSRF_TRUSTED_ORIGINS.append(RAILWAY_URL)
 
 # ===========================
 # Applications
@@ -146,7 +151,8 @@ if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
+    # ⚠ Disable SSL redirect inside Railway (handled by proxy)
+    SECURE_SSL_REDIRECT = False
 
 # ===========================
 # Logging

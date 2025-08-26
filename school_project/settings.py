@@ -110,22 +110,21 @@ STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
 
-# ✅ Media storage
-if os.environ.get("CLOUDINARY_URL"):
-    # Use Cloudinary in production
-    DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
-    MEDIA_URL = "/media/"   # Django still needs this for references
-else:
-    # Fallback to local file storage (development)
-    MEDIA_URL = "/media/"
-    MEDIA_ROOT = BASE_DIR / "media"
-    DEFAULT_FILE_STORAGE = "django.core.files.storage.FileSystemStorage"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
-# ✅ Static files via WhiteNoise
+# ✅ Correct storage config (default + staticfiles)
 STORAGES = {
+    "default": {
+        "BACKEND": (
+            "cloudinary_storage.storage.MediaCloudinaryStorage"
+            if os.environ.get("CLOUDINARY_URL")
+            else "django.core.files.storage.FileSystemStorage"
+        )
+    },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    }
+    },
 }
 
 # ===========================
@@ -138,13 +137,11 @@ LOGIN_URL = "/login/"
 # ===========================
 # Debugging & Logging (for Railway)
 # ===========================
-# Force errors to propagate and show in logs when deployed
 if "RAILWAY_ENVIRONMENT" in os.environ:
     DEBUG_PROPAGATE_EXCEPTIONS = True
     DEBUG = True
     ALLOWED_HOSTS = ["*"]
 
-# Log everything to console so Railway shows it
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

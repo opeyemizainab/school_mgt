@@ -817,15 +817,35 @@ def manage_teachers(request):
     if request.user.user_type != 'admin':
         return HttpResponse("Unauthorized", status=401)
 
-    teachers = TeacherProfile.objects.prefetch_related(
-        Prefetch(
-            'classassignment_set',
-            queryset=ClassAssignment.objects.select_related('classroom', 'subject'),
-            to_attr='class_assignments'
+    # ✅ Always pull in related User object
+    # ✅ Ensure teacher.class_assignments is available (even if empty)
+    teachers = (
+        TeacherProfile.objects
+        .select_related("user")   # preload User
+        .prefetch_related(
+            Prefetch(
+                'classassignment_set',
+                queryset=ClassAssignment.objects.select_related('classroom', 'subject'),
+                to_attr='class_assignments'
+            )
         )
     )
 
+    # ✅ Add fallback values so template won’t crash if fields are missing
+    for teacher in teachers:
+        if not hasattr(teacher, "class_assignments"):
+            teacher.class_assignments = []
+        if not teacher.phone:
+            teacher.phone = "-"
+        if not teacher.gender:
+            teacher.gender = "-"
+        if not teacher.user:
+            # orphan TeacherProfile (no linked User) → fake minimal user
+            from types import SimpleNamespace
+            teacher.user = SimpleNamespace(username="(deleted)", get_full_name=lambda: "(No Name)")
+
     return render(request, 'admin/manage_teachers.html', {'teachers': teachers})
+
 
 #new ADD TEACHERS
 

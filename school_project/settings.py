@@ -134,3 +134,27 @@ STORAGES = {
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 AUTH_USER_MODEL = "core.User"
 LOGIN_URL = "/login/"
+
+# ===========================
+# Debugging & Logging (for Railway)
+# ===========================
+# Force errors to propagate and show in logs when deployed
+if "RAILWAY_ENVIRONMENT" in os.environ:
+    DEBUG_PROPAGATE_EXCEPTIONS = True
+    DEBUG = True
+    ALLOWED_HOSTS = ["*"]
+
+# Log everything to console so Railway shows it
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "DEBUG",
+    },
+}

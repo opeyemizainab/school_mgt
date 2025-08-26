@@ -20,13 +20,22 @@ SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-do-not-use")
 DEBUG = os.environ.get("DEBUG", "False").lower() == "true"
 
 # Allow Railway & localhost
-RAILWAY_URL = os.environ.get("APP_URL")  # Railway sets this automatically
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
+RAILWAY_URL = os.environ.get("APP_URL")  # Railway may set this automatically
+
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "schoolmgt-production.up.railway.app",  # ✅ Your Railway domain
+]
+
 if RAILWAY_URL:
     ALLOWED_HOSTS.append(RAILWAY_URL.replace("https://", "").replace("http://", ""))
 
-# CSRF Trusted Origins (must be https)
-CSRF_TRUSTED_ORIGINS = []
+# CSRF Trusted Origins (must include https://)
+CSRF_TRUSTED_ORIGINS = [
+    "https://schoolmgt-production.up.railway.app",  # ✅ Your Railway domain
+]
+
 if RAILWAY_URL:
     CSRF_TRUSTED_ORIGINS.append(RAILWAY_URL)
 

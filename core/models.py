@@ -102,14 +102,18 @@ class StudentProfile(models.Model):
 
 class TeacherProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    gender = models.CharField(max_length=10)
-    phone = models.CharField(max_length=20)
+    gender = models.CharField(max_length=10, blank=True, null=True)   # ✅ optional
+    phone = models.CharField(max_length=20, blank=True, null=True)    # ✅ optional
     photo = models.ImageField(upload_to='teacher_photos/', blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     department = models.CharField(max_length=100, blank=True, null=True)
 
     def __str__(self):
-        return self.user.get_full_name() or self.user.username
+        if self.user:
+            return self.user.get_full_name() or self.user.username
+        return "Unknown Teacher"
+
+
 
 
 class LibrarianProfile(models.Model):

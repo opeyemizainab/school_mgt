@@ -847,8 +847,6 @@ def manage_teachers(request):
     return render(request, 'admin/manage_teachers.html', {'teachers': teachers})
 
 
-#new ADD TEACHERS
-
 @login_required
 def add_teacher(request):
     if request.user.user_type != 'admin':
@@ -875,9 +873,8 @@ def add_teacher(request):
                 user.user_type = 'teacher'
                 user.save()
 
-                # Create empty TeacherProfile
-                from .models import TeacherProfile
-                profile = TeacherProfile.objects.create(user=user)
+                # ✅ Prevent duplicate TeacherProfile
+                profile, created = TeacherProfile.objects.get_or_create(user=user)
 
                 messages.success(request, "Teacher user created. Now complete the profile.")
                 return redirect('edit_teacher', teacher_id=profile.id)
@@ -889,6 +886,7 @@ def add_teacher(request):
     return render(request, 'admin/add_teacher.html', {
         'user_form': user_form,
     })
+
 
 
 #new edit teachers
